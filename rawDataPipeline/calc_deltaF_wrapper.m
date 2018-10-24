@@ -1,4 +1,4 @@
-function [ deltaF,sampRate,truncTotal,fns,cellNames ] = calc_deltaF_wrapper(rawTimeSeries,Metadata )
+function [ deltaF,sampRate,fns,cellNames ] = calc_deltaF_wrapper(rawTimeSeries,Metadata )
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 fns=fieldnames(rawTimeSeries);
@@ -17,7 +17,6 @@ for J=1:length(fns)
         [ deltaF.(fn).(cn)] = svoboda_deltaF_simple( rawTimeSeries.(fn).(cn),0 );
 
     end
-    truncTotal(J) = orig_recorded_frames(J)-length(deltaF.(fn).(cellNames{1}));
 end
 
 
