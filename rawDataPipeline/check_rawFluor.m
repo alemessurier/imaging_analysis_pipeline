@@ -33,7 +33,7 @@ for i=1:length(cellNames)
     hold on
 end
 %     ylabel('Fluorescence (AU)'); xlabel('Time (seconds)');
-axis([1 length(rawTimeSeries.(fn).(cn)) 0 (length(fns)*spacing)]);
+% axis([1 length(rawTimeSeries.(fn).(cn)) 0 (length(fns)*spacing)]);
 %      scrollplot(200, 1:length(deltaF.(fn).(cn)), deltaF.(fn).(cn));
 
 

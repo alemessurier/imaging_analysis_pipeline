@@ -1,5 +1,5 @@
 function rawDataPipeline_shared(dir_raw,dir_processed,dir_reduced,filtData,...
-    filter_type,ptsToAvg,mag,StimISI,whisk,bl_length,timePostStim,timeEvoked,numBoots,permTestType)
+    filter_type,ptsToAvg,mag,StimISI,whisk,bl_length,timePostStim,timeEvoked,numBoots,permTestType,npWeight)
 
 % First step in analysis of 9-whisker receptive field mapping imaging  experiments.  Can be run as a function (called by 'analysisTemplate_date') but 
 % recommended to run section by section after setting directories, some
@@ -35,18 +35,35 @@ end
 %% Extract raw fluorescence time series from ROIs  *****only need to run this once; saves out rawTimeSeries and Metadata to dir_reduced****
 
 %get ROI raw time series, save
-[ rawTimeSeries,Metadata ] = getFluoTimeSeries_wrapper( dir_processed,  ROI_positions);
-save(strcat(dir_reduced,'Metadata'),'Metadata');
+cd(dir_reduced);
+exist_ROI_timeSeries=dir('ROI_timeSeries.mat'); % check to see if reduced data from this step already exists
+if isempty(exist_ROI_timeSeries)
+    [ rawTimeSeries,Metadata ] = getFluoTimeSeries_wrapper( dir_processed,  ROI_positions);
+    save(strcat(dir_reduced,'Metadata'),'Metadata');
     save(strcat(dir_reduced,'ROI_timeSeries.mat'),'rawTimeSeries');
+else
+    load([dir_reduced,exist_ROI_timeSeries.name])
+end
 
-% make NPcorr masks, save    
-npMasks=get_NPcorr_mask(dir_reduced,corrThreshold); % removes pixels from neuropil mask that are correlated with any ROI mask
-save([dir_reduced,'npMask_corr_',date,'.mat'],'npMasks');
+% make NPcorr masks, save
+cd(dir_reduced);
+exist_npMasks=dir('npMask_corr_*'); % check to see if reduced data from this step already exists
+if isempty(exist_npMasks)
+    npMasks=get_NPcorr_mask(dir_reduced,corrThreshold); % removes pixels from neuropil mask that are correlated with any ROI mask
+    save([dir_reduced,'npMask_corr_',date,'.mat'],'npMasks');
+else
+    load([dir_reduced,'npMask_corr_',date,'.mat'],'npMasks');
+end
 
 % get npMask time series, save
-[ rawTimeSeriesNP_corr,Metadata ] = getFluoTimeSeries_wrapper( dir_processed,  npMasks );
-save([dir_reduced,'npCorr_TS_',date,'.mat'],'rawTimeSeriesNP_corr');
-       
+cd(dir_reduced);
+exist_npCorr_timeSeries=dir('npCorr_TS_*'); % check to see if reduced data from this step already exists
+if isempty(exist_npCorr_timeSeries)
+    [ rawTimeSeriesNP_corr,Metadata ] = getFluoTimeSeries_wrapper( dir_processed,  npMasks );
+    save([dir_reduced,'npCorr_TS_',date,'.mat'],'rawTimeSeriesNP_corr');
+else
+    load([dir_reduced,'npCorr_TS_',date,'.mat'],'rawTimeSeriesNP_corr');
+end
 
 
 %% filter data with sliding average
@@ -54,7 +71,7 @@ if filtData==1
     [ filtTimeSeries ] = slidingAvg_rawF_wrapper( rawTimeSeries,ptsToAvg,filter_type );
     save(strcat(dir_reduced,'ROI_timeSeries.mat'),'rawTimeSeries','filtTimeSeries');
     [ npfiltTimeSeries ] = slidingAvg_rawF_wrapper( rawTimeSeriesNP_corr,ptsToAvg,filter_type );
-    save(strcat(dir_reduced,'NP_timeSeries.mat'),'rawTimeSeriesNP','npfiltTimeSeries');
+    save(strcat(dir_reduced,'npCorr_TS_',date,'.mat'),'rawTimeSeriesNP_corr','npfiltTimeSeries');
 end
 
 %% look through raw fluorescence movies to remove movies with large change in fluorescence
@@ -72,7 +89,7 @@ end
 [filtTimeSeries,npfiltTimeSeries,ROIs_exclude]=check_rawROIs( filtTimeSeries,npfiltTimeSeries );
 %% pre deltaF neuropil subtraction
 
-[ npNormTimeSeries ] = npSubtract_preDF( filtTimeSeries,npfiltTimeSeries, npweight ); %npweight is % of neuropil mask raw fluorescence to subtract from ROI mask
+[ npNormTimeSeries ] = npSubtract_preDF( filtTimeSeries,npfiltTimeSeries, npWeight ); %npWeight is % of neuropil mask raw fluorescence to subtract from ROI mask
 %% calculate deltaF/F
 
     [ deltaF,sampRate,truncTotal,fns,cellNames ] = calc_deltaF_wrapper(npNormTimeSeries,Metadata );
@@ -91,7 +108,7 @@ framesEvoked=(ceil(bl_length*sampRate(1))+1):(ceil(bl_length*sampRate(1))+ceil(t
 [ traceByStim, stimFramesAll ] = make_traceByStim( whisk,Stimuli,Metadata,deltaF,bl_length,timePostStim );
 
 %% find spontaneous activity
-[ sponTrace ] = make_sponTrace( Stimuli,Metadata,deltaF,bl_length,timePostStim );
+[ sponTrace ] = make_sponTrace( Stimuli,sampRate(1),deltaF,bl_length,timePostStim );
 
 %% permutation test for whisker responsiveness
 
@@ -106,7 +123,7 @@ save(strcat(dir_reduced,'step1_',date,'.mat'),'deltaF','Stimuli',...
     'permTestResults');
 save([dir_reduced,'settings_',date,'mat'],'bl_length','filtData','mag',...
     'movies_exclude','numBoots','permTestType','ptsToAvg','ROIs_exclude',...
-    'StimISI','timeEvoked','timePostStim','filter_type');
+    'StimISI','timeEvoked','timePostStim','filter_type','npWeight');
 
 
 

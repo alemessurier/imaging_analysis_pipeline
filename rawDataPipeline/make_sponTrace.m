@@ -50,7 +50,7 @@ end
 
 for j=1:length(cellNames)
     cn=cellNames{j};
-    sponTrace.(cn)=horzcat(sponTrace.(cn){:})';
+    sponTrace.(cn)=vertcat(sponTrace.(cn){:});
 end
 
 

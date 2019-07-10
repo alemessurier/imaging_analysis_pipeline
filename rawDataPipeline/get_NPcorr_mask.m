@@ -41,7 +41,7 @@ if length(ROI_path)==1
         
         % if no assertions fail, carry out function body
         curr_im=LoadTIFF_SI5([dir_processed,allTifs(1).name]);
-        np_ROIcorr=calc_npMaskCorr_byPix(curr_im,npMasks_basics,cellNames,corrThreshold,rawTimeSeries.(fns{1}));
+        np_ROIcorr=calc_npMaskCorr_byPix(curr_im,npMasks_basic,cellNames,corrThreshold,rawTimeSeries.(fns{1}));
         
         for fn=2:length(fns) % loop through all movies
             curr_im=LoadTIFF_SI5([dir_processed,allTifs(fn).name]);
@@ -61,13 +61,13 @@ end
 
 end
 
-function [neuropil_mask_ROIcorr]=calc_npMaskCorr_byPix(curr_im,NPmasks_basic,cellNames,corrThreshold,rawTimeSeries)
+function [neuropil_mask_ROIcorr]=calc_npMaskCorr_byPix(curr_im,np_ROIcorr,cellNames,corrThreshold,rawTimeSeries)
 
 cn_inds=1:length(cellNames);
 neuropil_mask_ROIcorr=zeros(512,512,length(cellNames));
 
-parfor i=1:size(NPmasks_basic,3)
-    thisNPMask=NPmasks_basic(:,:,i); % pick one npMask at a time
+parfor i=1:size(np_ROIcorr,3)
+    thisNPMask=np_ROIcorr(:,:,i); % pick one npMask at a time
     [x,y]=find(thisNPMask); % find index for every pixels in a npMask
     
     % reorder cellNames to start with this ROI

@@ -61,7 +61,7 @@ for j=1:length(cellNames)
     cn=cellNames{j};
     for i=1:length(whisk)
         whisker=whisk{i};
-        traceByStim.(cn).(whisker)=horzcat(traceByStim.(cn).(whisker){:})';
+        traceByStim.(cn).(whisker)=vertcat(traceByStim.(cn).(whisker){:});
     end
 end
 
