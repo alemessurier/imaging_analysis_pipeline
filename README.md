@@ -1,5 +1,5 @@
 # imaging_analysis_pipeline
-MATLAB functions for processing 2photon calcium imaging data into reduced data for analysis of 9-whisker receptive fields.
+MATLAB functions for processing 2photon calcium imaging data into reduced data for analysis of 9-whisker receptive fields. Sample data for trying out this pipeline is available here: https://drive.google.com/drive/folders/1tpNpZWGiPoMCf5lb7dXAPFKZno6VQ0xV?usp=sharing
 
 ## basics
 Main script 'rawDataPipeline_shared' calls functions for reducing raw calcium imaging movie files collected with ScanImage. First, use 'analysisTemplate' to manually enter some variables, including directories containing raw data and stimulus files, directories for saving reduced data, and some parameters for data analysis. 'analysisTemplate' must be saved in 'dir_reduced'. Running 'analysisTemplate' will call 'rawDataPipeline' as a function; however, I recommend running the first two sections of 'analysisTemplate', then running 'rawDataPipeline' section-by-section since some image processing steps may take a long time, and data from each step is saved incrementally.
