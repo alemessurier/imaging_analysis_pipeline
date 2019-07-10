@@ -1,8 +1,7 @@
 function  [filtTimeSeries_new,npfiltTimeSeries_new,ROIs_exclude]=check_rawROIs( filtTimeSeries,npfiltTimeSeries )
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
-
-
+%GUI that loops through all ROIs, plotting raw fluorecence time series for
+%ROI mask, neuropil mask, and ROI fluorescence post neuropil subtraction.
+%black is ROI, red is mask, blue is subtraction
 [ npNormTimeSeries ] = npSubtract_preDF( filtTimeSeries,npfiltTimeSeries,0.3 );
 
 fns=fieldnames(filtTimeSeries);

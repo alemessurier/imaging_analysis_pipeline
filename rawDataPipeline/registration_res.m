@@ -1,21 +1,9 @@
 function [ex_image]=registration_res(varargin)
-%% registration_res runs dftregistration on sets of tiff stacks collected with ScanImage,
-% saves registered stacks.
-%
-% INPUTs:
-%       dir_to_reg -     directory to look for raw tiffs (required, must be
-%                        listed before dir_to_save, set in analysisTemplate as 'dir_raw')
-%
-%       dir_to_save -    directory to save registered tiffs (required, must be
-%                        listed after dir_to_reg in list of inputs; set in 
-%                        analysisTemplate as 'dir_reg')
-%       
-%       ref_stack_path - file path of stack to use as reference (optional;
-%                        if not set, the reference stack will be the middle
-%                        stack found in dir_to_reg)
-%
-%
-%% function body
+% loads tif stacks from dir_raw, registers using dftregistration.m
+% (available on MATLAB file exchange), and saves registered stacks to
+% dir_registered. Input 1 must be dir_raw, input 2 must be dir_registered
+% (set in 'analysisTemplate.m'). Optional 3rd input is filepath of movie to
+% use as refernce; if not included, middle movie will be used. s
 
 indsDir=cellfun(@(x)isdir(x),varargin,'Uni',1);
 dirsReg=varargin(indsDir);

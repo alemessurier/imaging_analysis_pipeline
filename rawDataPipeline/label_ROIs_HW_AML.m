@@ -1,27 +1,11 @@
-function [ROI_positions,neuropil_mask]=label_ROIs(dir_ROIs,dir_ROI_positions,ring,gap,skip)
-% Loops through movies, calls define_ROIsAML, and outputs ROIs
+function [ROI_positions,neuropil_mask]=label_ROIs_HW_AML(dir_ROIs,dir_ROI_positions,ring,gap)
+% Loops through every fifth movie, calls define_ROIsAML, and outputs ROIs
 % for entire imaging session as ellipse positions.
 %
-% INPUTs:   dir_ROIs - directory containing registered 16bit tif stacks from
-%                      one imaging field
+% INPUTs: dir_ROIs - directory containing registered 16bit tif stacks from
+% one imaging field
 %
-%           dir_ROI_positions - (optional) directory containing existing
-%                      ROI masks from a previous imaging session to adjust to this
-%                      imaging field
-%
-%           ring - width (# pixels) to use for donut shaped neuropil masks surrounding
-%                  each soma ROI
-%
-%           gap -  width (# pixels) of gap to leave between soma ROI and NP
-%                  mask
-%
-%           skip - loop through every Nth movie, with N defined by skip
-%
-% OUTPUTs: ROI_positions - array containing all ROI masks, defined by
-%                          binary 512x512 masks. Each mask is one soma.
-%
-%          neuropil_mask - array containing all NP masks, surrounding each 
-%                          soma mask in ROI_positions.
+% OUTPUTs: ROI_positions - array of logical ROI masks. Each z is one ROI
 %
 % Amy LeMessurier 2014
 
@@ -59,7 +43,7 @@ else
 end
 
     
-for K=1:skip:length(stackNames);  % loop every N movie files
+for K=1:5:length(stackNames);  % loop every 5 movie files
     imPath=strcat(dir_ROIs,stackNames{K});
     [im, ~] = LoadTIFF_SI5(imPath);
     ROIs_new=define_ROI_masks(im,ROI_positions); % ROI(:,:,1)=zeros(512,512) in function
@@ -76,6 +60,10 @@ for i=1:size(ROI_positions,3)
 end
 ROI_positions(:,:,emptyROIInd)=[];
 
+
+
+
+
 %neuropil mask new
 %create a donut-shaped npMask beginning gap pixels from the outer most of
 %ROIs and has the width of donut ring = ring pixels
@@ -84,6 +72,49 @@ ROI_positions(:,:,emptyROIInd)=[];
 
 
 
+
+%remove pixel which have highly correlated activity with its neighbors,
+%creating npmask for corr=1
+% for i=1:size(neuropil_mask,3)
+%     neuropil_mask_corr(:,:,i)=neuropil_mask(:,:,i) & ~correlation_map;
+% end
+
+
+
+
+
+
+%neuropil mask old
+% this convolution method creats a really big npMask with no gaps between
+% npMask and ROIs, not used in analysis now
+% npMasksOld=makeNeuropilMasks(ROI_positions);
+
+function NeuropilMasks=makeNeuropilMasks(ROIMasks)
+
+numROIs=size(ROIMasks,3);
+countMatrix = sum(ROIMasks, 3);                    % determine number of ROIs found in each pixel
+overlap = countMatrix > 1;                         % define regions where ROIs overlap
+ROIMasks(repmat(overlap, 1, 1, numROIs)) = 0;      % remove regions of overlap from ROI masks
+
+g = exp(-(-10:10).^2/2/2^2);
+maskb = conv2(g,g,double(logical(countMatrix)),'same')>.15;                        % dilation for border region around ROIs
+[xi,yi] = meshgrid(1:size(ROIMasks,1),1:size(ROIMasks,2));
+for rindex = 1:numROIs
+    if sum(sum(ROIMasks(:,:,rindex)))==0
+         NeuropilMasks(:,:,rindex) = zeros(size(ROIMasks,1),size(ROIMasks,2)); 
+    else
+        centroid=regionprops(ROIMasks(:,:,rindex),'centroid');
+        centroids(rindex,:)=centroid.Centroid; %centroid is structure array, and centroid corordinate is under field "Centroid"
+        for neuropilrad = 40:5:100
+            M = (xi-centroids(rindex,1)).^2+(yi-centroids(rindex,2)).^2 < neuropilrad^2;    % mask of pixels within the radius
+            NeuropilMasks(:,:,rindex) = M.*~maskb;                                          % remove ROIs and border regions
+            if nnz(NeuropilMasks(:,:,rindex)) > 4000
+                break
+            end
+        end
+    end
+end
+end
 
 
 

@@ -1,6 +1,13 @@
 function [ Stimuli,protocol ] = make_Stimuli( dir_reduced,fns,StimISI,Metadata )
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+%Reads Igor binary file (containing stimulus information from igor whisker
+%stimulus delivery software), returns 'Stimuli' structure with field for
+%each movie containing sweep numbers, labels, and stimulus time.
+%'dir_reduced', and 'StimISI' are set manually in 'analysisTemplate.m'.
+%'fns' is a cell array of movie filenames returned by
+%'calc_deltaF_wrapper.m' and 'Metadata' is a structure array containing
+%movie metadata returned by 'getFluoTimeSeries_wrapper'. Igor binary files
+%(.ibt) for each movie must be saved in directory indicated by
+%'dir_reduced'.
 
 tmp=dir(fullfile(dir_reduced,'/*.ibt'));
 stimFiles=arrayfun(@(x)x.name,tmp,'Uni',0);

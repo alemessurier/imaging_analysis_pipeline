@@ -1,6 +1,5 @@
 function [ P ] = permutationTest(stimLocked,spont,numReps )
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%Permutation test for difference in means between two distributionss
 
 T=abs(nanmean(stimLocked)-nanmean(spont));
 dim1=find(size(stimLocked)>1);
@@ -13,9 +12,6 @@ for t=1:numReps
     indsB(indsA)=0;
     indsB=logical(indsB);
     B=pooled(indsB);
-%     A=randsample(pooled,length(stimLocked));
-%     inds=ismember(pooled,A);
-%     B=pooled(~inds);
     PT(t)=abs(nanmean(A)-nanmean(B));
 end
 PT(t+1)=T;

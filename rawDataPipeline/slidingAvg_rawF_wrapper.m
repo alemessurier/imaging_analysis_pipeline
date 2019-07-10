@@ -1,6 +1,7 @@
 function [ filtTimeSeries ] = slidingAvg_rawF_wrapper( rawTimeSeries,ptsToAvg,type )
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+%wrapper fxn for moving average timeseries filter. 'ptsToAvg' is number of points to
+% average over; 'type' is either 'median' or 'mean', both set in
+% 'analysisTemplate.m'.
 
 fns=fieldnames(rawTimeSeries);
 cellNames=fieldnames(rawTimeSeries.(fns{1}));

@@ -1,7 +1,7 @@
 function [ pvals ] = permuteTest_whisk_2016( sponTrace,traceByStim,numReps,framesEvoked,type )
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
-
+%for each ROI, tests for difference in means between spontaeous dF/F and
+%dF/F evoked by each whisker. Returns p-value for each whisker. For further analysis must be corrected for 9 comparisons using FDR. 
+%'numReps' and 'type' are set in 'analysisTemplate.m'
 
 cellNames=fieldnames(sponTrace);
 whisk=fieldnames(traceByStim.(cellNames{1}));

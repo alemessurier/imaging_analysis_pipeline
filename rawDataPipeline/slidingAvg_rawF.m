@@ -1,6 +1,7 @@
 function [ filtTrace ] = slidingAvg_rawF( rawTrace,ptsToAvg,type )
-%UNTITLED8 Summary of this function goes here
-%   Detailed explanation goes here
+% moving average timeseries filter. 'ptsToAvg' is number of points to
+% average over; 'type' is either 'median' or 'mean', both set in
+% 'analysisTemplate.m'
 
 filtTrace=zeros(1,length(rawTrace));
 

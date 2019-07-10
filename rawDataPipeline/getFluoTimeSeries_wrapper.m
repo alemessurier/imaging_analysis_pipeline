@@ -1,12 +1,13 @@
 function [ rawTimeSeries,Metadata ] = getFluoTimeSeries_wrapper( dir_processed,  ROI_positions )
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%Extracts raw fluorescecence of each ROI on each frame, saves to structure
+%'rawTimeSeries' with fields for each ROI and each movie. extracts
+%metadata for each movie from tiff header. 
 cd(dir_processed)
 imFiles=dir('*.tif');
 stackNames=arrayfun(@(x)x.name,imFiles,'Uni',0);
 
 
-parfor K=1:length(stackNames)
+parfor K=1:length(stackNames) % change parfor=>for if not parallelizing
     thisStack=stackNames{K};
     fns{K}=thisStack(1:(strfind(thisStack,'.')-1));
     [curr_im,tmpMetadata]=LoadTIFF_SI5(strcat(dir_processed,thisStack));

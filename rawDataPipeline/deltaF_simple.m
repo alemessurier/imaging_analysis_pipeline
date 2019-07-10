@@ -1,15 +1,7 @@
-function [ deltaF] = svoboda_deltaF_simple( trace,kurt_thresh )
+function [ deltaF ] = deltaF_simple( trace)
 % New version 8/5/15, post-thesis commitee meeting
 
-kurt=kurtosis(trace);
-percentile_baseline=0.05;
-
-r=[];
-samples=length(trace);
-
-switch kurt>kurt_thresh
-    case 1
-        
+percentile_baseline=0.05;        
         bltmp=sort(trace,'ascend');
         bline=bltmp(floor(percentile_baseline*length(bltmp)));
         if le(bline,0)
@@ -22,20 +14,16 @@ switch kurt>kurt_thresh
         
         
         
-    case 0
-        bline=median(trace);
-end
-
-for t = 1:samples
-    r = [r; (trace(t) - bline)/bline];
-end
+   
+deltaF=(trace - bline)/bline;
 
 
 
 
 
 
-deltaF=r;
+
+
 
 end
 

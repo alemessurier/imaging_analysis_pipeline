@@ -19,7 +19,7 @@ whisk={'e3' 'e2' 'e1' 'd3' 'd2' 'd1' 'c3' 'c2' 'c1' }; % set of whiskers deflect
 numBoots=10000; % number of iterations for permutation tests of whisker responsiveness
 filtData=1; % if 1, ROI raw fluorescence timeseries will be filtered with a moving average filter; if 0, no temporal filtering
 ptsToAvg=2; % number of frames before and after each frame to average over for temporal filter
-type='median'; % type of temporal filter (can be 'median' or 'mean')
+filter_type='median'; % type of temporal filter (can be 'median' or 'mean')
 depth=140; % depth of imaging field from dura
 mag=1.5; % software zoom set in ScanImage during imaging
 permTestType='median'; % type of permutation test to use for testing for whisker responsiveness
@@ -39,5 +39,5 @@ end
 
 %% run analysis pipeline to reduce and save data
 
-reduce_image_data(dir_raw,dir_processed,dir_reduced,dir_ROItemplate,...
-    StimISI,whisk,bl_length,timePostStim,timeEvoked,numBoots,ring,gap,corrThreshold)
+rawDataPipeline_shared(dir_raw,dir_processed,dir_reduced,filtData,...
+    filter_type,ptsToAvg,mag,StimISI,whisk,bl_length,timePostStim,timeEvoked,numBoots,permTestType)
